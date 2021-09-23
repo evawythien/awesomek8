@@ -1,5 +1,6 @@
 using Awesomek8.Core;
 using Dapr.Client;
+using k8s;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +40,8 @@ namespace Awesomek8
             services.AddScoped<IKubernetesClient, KubernetesClient<KubernetesOptions>>(services =>
             {
                 var options = services.GetRequiredService<KubernetesOptions>();
-                var client = new DaprClientBuilder().UseGrpcEndpoint(options.UrlBase).Build();
+                var config = KubernetesClientConfiguration.InClusterConfig();
+                var client = new Kubernetes(config);
                 var logger = services.GetService<ILogger<KubernetesClient<KubernetesOptions>>>();
                 return new KubernetesClient<KubernetesOptions>(options, client, logger);
             });

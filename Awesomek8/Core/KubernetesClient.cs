@@ -1,4 +1,5 @@
 ﻿using Dapr.Client;
+using k8s;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace Awesomek8.Core
     {
 
         private readonly TOptions options;
-        private readonly DaprClient client;
+        private readonly Kubernetes client;
         private readonly ILogger<KubernetesClient<KubernetesOptions>> logger;
 
-        public KubernetesClient(TOptions options, DaprClient client, ILogger<KubernetesClient<KubernetesOptions>> logger)
+        public KubernetesClient(TOptions options, Kubernetes client, ILogger<KubernetesClient<KubernetesOptions>> logger)
         {
             this.options = options;
             this.client = client;
@@ -24,11 +25,8 @@ namespace Awesomek8.Core
         public async Task<string> GetSecretsAsync()
         {
 
-            var client = await this.client.GetSecretAsync(
-                    "kubernetes", // Name of the Dapr Secret Store
-                    "super-secret", // Name of the k8s secret
-                    new Dictionary<string, string>() { { "namespace", "default" } }); // Namespace where the k8s secret is deployed
-   
+            //var client = await this.client.CreateCertificateSigningRequest();
+           
             return "hh";
         }
     }

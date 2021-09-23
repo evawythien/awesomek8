@@ -1,0 +1,79 @@
+Instalación nuget - Dapr.Client
+
+
+Comandos utilizados:
+
+- Build the app’s container image
+    docker build -t aweseome8 .
+- Start an app container    
+    docker run -dp 8080:80 aweseome8
+
+
+Install dapr
+    $script=iwr -useb https://raw.githubusercontent.com/dapr/cli/master/install/install.ps1; $block=[ScriptBlock]::Create($script); invoke-command -ScriptBlock $block -ArgumentList "", "$HOME/dapr"
+
+Install choco
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+Install kubernetes
+    choco install kubernetes-cli
+
+
+
+
+Cambiar de sitema operativo
+    - Desde C:\Program Files\Docker\Docker>
+    - DockerCli.exe -SwitchLinuxEngine
+
+
+
+    - Get k8 secrets
+        kubectl get secrets
+
+    - Ver lo que contiene un secret
+        kubectl describe secrets/nombre-del-secret
+
+
+
+        dapr init --kubernetes
+
+- Get todos los container
+    docker container ls
+- Entramos en el contenedor en el que queramos trabajar.
+     docker exec -it [container id] sh
+- Instalamos Dapr
+    wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+Si no tenemos instalado 'wget' ejecutamos lo siguiente:
+    sudo apt-get install wget
+- Intalamos 
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+
+Ahora necesitamos montar un cluster (en mi caso Minikube) para ello necesitamos:
+
+- Instalacion docker dentro del cluster:
+
+    - apt-get install apt-transport-https 
+    - apt-get install ca-certificates 
+    - apt-get install curl 
+    - apt-get install gnupg 
+    - apt-get install lsb-release
+    - apt-get install software-properties-common
+
+- Instalamos Docker’s official GPG key:
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+
+
+
+
+
+Enlaces de interés:
+    https://docs.dapr.io/operations/hosting/kubernetes/kubernetes-deploy/
+    https://docs.dapr.io/operations/hosting/kubernetes/cluster/setup-minikube/
+
+
+
+
+https://serrodcal.medium.com/exponiendo-varios-certificados-bajo-una-misma-ip-en-kubernetes-84bc63c08c68
+
+https://github.com/kubernetes-client/csharp

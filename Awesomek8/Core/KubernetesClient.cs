@@ -28,8 +28,7 @@ namespace Awesomek8.Core
                     "kubernetes", // Name of the Dapr Secret Store
                     "super-secret", // Name of the k8s secret
                     new Dictionary<string, string>() { { "namespace", "default" } }); // Namespace where the k8s secret is deployed
-
-
+   
             return "hh";
         }
     }

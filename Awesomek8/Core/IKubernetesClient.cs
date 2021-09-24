@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using k8s.Models;
 using System.Threading.Tasks;
 
 namespace Awesomek8.Core
 {
     public interface IKubernetesClient
     {
-        Task<string> GetSecretsAsync();
+        Task<V1Secret> CreateSecrets(string secretName);
     }
 }

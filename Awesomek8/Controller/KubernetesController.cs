@@ -1,4 +1,5 @@
 ﻿using Awesomek8.Core;
+using k8s.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,9 @@ namespace Awesomek8.Controller
         }
 
         [HttpGet]
-        public async Task<string> GetSecretsAsync()
+        public async Task<V1Secret> GetSecretsAsync(string secretName)
         {
-            var secretValues = await client.GetSecretsAsync();
-
-            // Get the secret value
-            //var secretValue = secretValues["super-secret"];
-
-            //context.Response.ContentType = "application/json";
-            /// var ff = await JsonSerializer.SerializeAsync(context.Response.Body, secretValue);
-            return "hola";
+            return await client.CreateSecrets(secretName);
         }
     }
 }

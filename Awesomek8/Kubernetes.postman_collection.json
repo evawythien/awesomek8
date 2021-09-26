@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "9c93307d-e5c3-4fec-858d-c7987f417a18",
+		"name": "Kubernetes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create secret",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Name",
+							"value": "nombresecreto1",
+							"type": "text"
+						},
+						{
+							"key": "Namespace",
+							"value": "default",
+							"type": "text"
+						},
+						{
+							"key": "File",
+							"type": "file",
+							"src": "/D:/Repositorios/Awesomek8/Awesomek8/autofirmado.pfx"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{UrlBase}}/Kubernetes/secret",
+					"host": [
+						"{{UrlBase}}"
+					],
+					"path": [
+						"Kubernetes",
+						"secret"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create insgress",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"namespace\": \"default\",\r\n    \"ingressName\": \"string\",\r\n    \"host\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{UrlBase}}/Kubernetes/ingress",
+					"host": [
+						"{{UrlBase}}"
+					],
+					"path": [
+						"Kubernetes",
+						"ingress"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "UrlBase",
+			"value": "http://localhost:5000/"
+		}
+	]
+}

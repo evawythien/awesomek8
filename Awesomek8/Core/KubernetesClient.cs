@@ -1,9 +1,13 @@
-﻿using k8s;
+﻿using Awesomek8.Dtos;
+using k8s;
 using k8s.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Awesomek8.Core
@@ -22,7 +26,7 @@ namespace Awesomek8.Core
             this.logger = logger;
         }
 
-        public async Task<V1Secret> CreateSecrets(string secretName)
+        public async Task<V1Secret> CreateSecrets(Secret secret)
         {
             try
             {
@@ -31,94 +35,90 @@ namespace Awesomek8.Core
                 V1Secret vsecret = new V1Secret()
                 {
                     ApiVersion = group.ApiVersion,
-
                     Kind = "Secret",
                     Metadata = new V1ObjectMeta()
                     {
-                        Name = secretName.ToLower()
-                    }
-                };
-
-                V1Secret secret = await client.CreateNamespacedSecretAsync(vsecret, "default");
-
-
-                return secret;
-            }
-            catch (HttpOperationException e)
-            {
-                Console.WriteLine(e.Response.Content);
-
-                var jsonString = JsonConvert.DeserializeObject<KubernetesError>(e.Response.Content);
-                return null;
-            }
-        }
-
-
-        public async Task<V1CertificateSigningRequest> CreateCertificate(byte[] archive)
-        {
-            try
-            {
-                V1APIGroup group = client.GetAPIGroup();
-
-                V1CertificateSigningRequest certificate = new V1CertificateSigningRequest()
-                {
-                    ApiVersion = group.ApiVersion,
-
-                    Kind = "Secret",
-                    Metadata = new V1ObjectMeta()
-                    {
-                        Name = "awesomesecret"
+                        Name = secret.Name.ToLower()
                     },
-                    Spec = new V1CertificateSigningRequestSpec()
+                    Data = new Dictionary<string, byte[]>()
                     {
-                        Request = archive,                        
+                        [secret.File.FileName] = GetFileContent(secret.File)
                     }
                 };
 
-                V1CertificateSigningRequest secret = await client.CreateCertificateSigningRequestAsync(certificate);
-
-
-                return secret;
+                return await client.CreateNamespacedSecretAsync(vsecret, "default");
             }
-            catch (HttpOperationException e)
+            catch (HttpOperationException ex)
             {
-                Console.WriteLine(e.Response.Content);
-
-                var jsonString = JsonConvert.DeserializeObject<KubernetesError>(e.Response.Content);
-                return null;
+                var error = JsonConvert.DeserializeObject<KubernetesError>(ex.Response.Content);
+                throw new Exception(error.Message);
             }
         }
 
-
-        public async Task<V1CertificateSigningRequest> CreateIngress()
+        public async Task<V1Status> DeleteSecret(string secretName, string namespaceName)
         {
             try
             {
                 V1APIGroup group = client.GetAPIGroup();
 
-                V1CertificateSigningRequest certificate = new V1CertificateSigningRequest()
+                V1DeleteOptions deleteOptions = new V1DeleteOptions()
                 {
                     ApiVersion = group.ApiVersion,
-
-                    Kind = "Secret",
-                    Metadata = new V1ObjectMeta()
-                    {
-                        Name = "awesomesecret"
-                    }
-
+                    Kind = "Secret"
                 };
 
-
-
-                return certificate;
+                return await client.DeleteNamespacedSecretAsync(secretName, namespaceName, deleteOptions);
             }
-            catch (HttpOperationException e)
+            catch (HttpOperationException ex)
             {
-                Console.WriteLine(e.Response.Content);
-
-                var jsonString = JsonConvert.DeserializeObject<KubernetesError>(e.Response.Content);
-                return null;
+                var error = JsonConvert.DeserializeObject<KubernetesError>(ex.Response.Content);
+                throw new Exception(error.Message);
             }
+        }
+
+
+        public async Task<V1Ingress> CreateIngress(Ingress ingress)
+        {
+            try
+            {
+                V1Ingress newIngress = new V1Ingress()
+                {
+                    ApiVersion = "networking.k8s.io/v1",
+                    Kind = "Ingress",
+                    Metadata = new V1ObjectMeta()
+                    {
+                        Name = ingress.IngressName.ToLower()
+                    },
+                    Spec = new V1IngressSpec()
+                    {
+                        Rules = new List<V1IngressRule>
+                        {
+                            new V1IngressRule() { Host = ingress.Host }
+                        }
+                    }
+                };
+
+                return await client.CreateNamespacedIngressAsync(newIngress, ingress.Namespace);
+            }
+            catch (HttpOperationException ex)
+            {
+                var error = JsonConvert.DeserializeObject<KubernetesError>(ex.Response.Content);
+                throw new Exception(error.Message);
+            }
+        }
+
+
+        private byte[] GetFileContent(IFormFile file)
+        {
+            if (file.Length > 0)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+            return null;
         }
     }
 }

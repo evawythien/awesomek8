@@ -4,10 +4,10 @@
     {
         public string Kind { get; set; }
         public string ApiVersion { get; set; }
-        public object metadata { get; set; }
+        public object Metadata { get; set; }
         public string Status { get; set; }
-        public string message { get; set; }
-        public string reason { get; set; }
+        public string Message { get; set; }
+        public string Reason { get; set; }
         public KubernetesErrorDetail Details { get; set; }
         public string Code { get; set; }
     }

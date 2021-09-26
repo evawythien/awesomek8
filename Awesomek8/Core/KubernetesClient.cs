@@ -46,7 +46,7 @@ namespace Awesomek8.Core
                     }
                 };
 
-                return await client.CreateNamespacedSecretAsync(vsecret, "default");
+                return await client.CreateNamespacedSecretAsync(vsecret, secret.Namespace);
             }
             catch (HttpOperationException ex)
             {

@@ -38,7 +38,8 @@ namespace Awesomek8.Core
                     Kind = "Secret",
                     Metadata = new V1ObjectMeta()
                     {
-                        Name = secret.Name.ToLower()
+                        Name = secret.Name.ToLower(),
+                        CreationTimestamp = DateTime.Now
                     },
                     Data = new Dictionary<string, byte[]>()
                     {
@@ -91,9 +92,40 @@ namespace Awesomek8.Core
                     },
                     Spec = new V1IngressSpec()
                     {
+                        //Tls = new List<V1Ingress>() 
+                        //{  
+                        //   new V1Ingress(){ se} 
+                        //}
                         Rules = new List<V1IngressRule>
                         {
-                            new V1IngressRule() { Host = ingress.Host }
+                            new V1IngressRule()
+                            {
+                                Host = ingress.Host,
+                                Http = new V1HTTPIngressRuleValue()
+                                {
+                                    Paths = new List<V1HTTPIngressPath>()
+                                    {
+                                        new V1HTTPIngressPath()
+                                        {
+                                            PathType="Prefix",
+                                            Path = "/" ,
+                                            Backend = new V1IngressBackend()
+                                            {
+                                                Service = new V1IngressServiceBackend()
+                                                {
+                                                    Name = "awesome8-http",
+
+                                                    Port = new V1ServiceBackendPort()
+                                                    {
+                                                        Name = "http",
+                                                        Number = 80
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 };

@@ -92,10 +92,14 @@ namespace Awesomek8.Core
                     },
                     Spec = new V1IngressSpec()
                     {
-                        //Tls = new List<V1Ingress>() 
-                        //{  
-                        //   new V1Ingress(){ se} 
-                        //}
+                        Tls = new List<V1IngressTLS>()
+                        {
+                            new V1IngressTLS()
+                            {
+                                Hosts = new List<string>(){ ingress.Host },
+                                SecretName = "nombresecreto1"
+                            }
+                        },
                         Rules = new List<V1IngressRule>
                         {
                             new V1IngressRule()
@@ -114,11 +118,9 @@ namespace Awesomek8.Core
                                                 Service = new V1IngressServiceBackend()
                                                 {
                                                     Name = "awesome8-http",
-
                                                     Port = new V1ServiceBackendPort()
                                                     {
-                                                        Name = "http",
-                                                        Number = 80
+                                                        Number = 8080
                                                     }
                                                 }
                                             }

@@ -50,7 +50,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"namespace\": \"default\",\r\n    \"ingressName\": \"string\",\r\n    \"host\": \"string\"\r\n}",
+					"raw": "{\r\n    \"namespace\": \"default\",\r\n    \"ingressName\": \"holaingresss\",\r\n    \"host\": \"eva-portatil\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

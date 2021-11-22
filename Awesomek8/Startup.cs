@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Awesomek8
@@ -22,14 +21,7 @@ namespace Awesomek8
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddDapr();
-            services.AddCors(options => options.AddPolicy("_myAllowSpecificOrigins",
-                              builder =>
-                              {
-                                  builder.AllowAnyOrigin()//.WithOrigins(new string[] { "http://localhost:8080", "https://localhost:8080" })
-                                  .AllowAnyMethod()
-                                  .AllowAnyHeader();
-                              }));
+            services.AddControllers();
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc($"v1", new OpenApiInfo
@@ -39,16 +31,12 @@ namespace Awesomek8
                 });
             });
 
-            services.Configure<KubernetesOptions>(Configuration.GetSection("KubernetesOptions"))
-                    .AddScoped(provider => provider.GetRequiredService<IOptionsSnapshot<KubernetesOptions>>().Value);
-
-            services.AddScoped<IKubernetesClient, KubernetesClient<KubernetesOptions>>(services =>
+            services.AddScoped<IKubernetesClient, KubernetesClient>(services =>
             {
-                var options = services.GetRequiredService<KubernetesOptions>();
-                var config = KubernetesClientConfiguration.BuildDefaultConfig();
-                var client = new Kubernetes(config);
-                var logger = services.GetService<ILogger<KubernetesClient<KubernetesOptions>>>();
-                return new KubernetesClient<KubernetesOptions>(options, client, logger);
+                KubernetesClientConfiguration config = KubernetesClientConfiguration.BuildDefaultConfig();
+                Kubernetes client = new Kubernetes(config);
+                ILogger<KubernetesClient> logger = services.GetService<ILogger<KubernetesClient>>();
+                return new KubernetesClient(client, logger);
             });
         }
 
@@ -56,16 +44,16 @@ namespace Awesomek8
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage()
-            .UseSwagger(options =>
-            {
-                options.RouteTemplate = "/swagger/{documentName}/swagger.{json|yaml}";
-            })
-            .UseSwaggerUI(options =>
-            {
-                options.EnableFilter();
-                options.ShowExtensions();
-                options.SwaggerEndpoint($"/swagger/v1/swagger.json", $"Awesomek8 Docs");
-            });
+               .UseSwagger(options =>
+               {
+                   options.RouteTemplate = "/swagger/{documentName}/swagger.{json|yaml}";
+               })
+               .UseSwaggerUI(options =>
+               {
+                   options.EnableFilter();
+                   options.ShowExtensions();
+                   options.SwaggerEndpoint($"/swagger/v1/swagger.json", $"Awesomek8 Docs");
+               });
 
             app.UseExceptionHandler("/Error");
 

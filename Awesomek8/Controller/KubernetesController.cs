@@ -11,29 +11,23 @@ namespace Awesomek8.Controller
     [ApiController]
     public class KubernetesController : ControllerBase
     {
-        private IKubernetesClient client { get; set; }
+        private IKubernetesClient Client { get; set; }
 
         public KubernetesController(IKubernetesClient client)
         {
-            this.client = client;
+            this.Client = client;
         }
 
         [HttpPost("secret")]
         public async Task<V1Secret> CreateSecrets([FromForm] Secret secret)
         {
-            return await client.CreateSecrets(secret);
-        }
-
-        [HttpDelete("secret")]
-        public async Task<V1Status> DeleteSecret(string secretName, string namespaceName)
-        {
-            return await client.DeleteSecret(secretName, namespaceName);
+            return await Client.CreateSecrets(secret);
         }
 
         [HttpPost("ingress")]
         public async Task<V1Ingress> CreateIngress(Ingress ingress)
         {
-            return await client.CreateIngress(ingress);
+            return await Client.CreateIngress(ingress);
         }
     }
 }
